@@ -1,0 +1,31 @@
+tomcat.8080/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### MVN ###
+target/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
