@@ -5,14 +5,26 @@ import de.mathema.greetings.models.greetingStore
 import io.ktor.http.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.server.application.*
+import io.ktor.server.config.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 
-// Succeeds only with enabled application.conf.disabled!
-@Ignore
+fun Application.testData() {
+    greetingStore["casual"] = Greeting("casual","Hey there!")
+    greetingStore["formal"] = Greeting("formal","Good morning!")
+}
+
+fun Application.noData() {
+    greetingStore.clear()
+}
+
 class ApplicationUsingConfigFileTest {
     @Test
     fun testStartWithEmptyGreetingStorage() = testApplication {
+        environment {
+            config = ApplicationConfig("application-test-nodata.conf")
+        }
         client.get("/greetings").apply {
             assertEquals(HttpStatusCode.NotFound, status)
             assertEquals("No greetings found", bodyAsText())
@@ -21,11 +33,9 @@ class ApplicationUsingConfigFileTest {
 
     @Test
     fun testReturnAllGreetingsStored() = testApplication {
-        application {
-            storeGreeting(greetingStore, Greeting("casual","Hey there!"))
-            storeGreeting(greetingStore,  Greeting("formal","Good morning!"))
+        environment {
+            config = ApplicationConfig("application-test.conf")
         }
-
         client.get("/greetings").apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("""[{"type":"casual","greeting":"Hey there!"},{"type":"formal","greeting":"Good morning!"}]""", bodyAsText())
@@ -36,6 +46,9 @@ class ApplicationUsingConfigFileTest {
 
     @Test
     fun testCreateAGreeting() = testApplication {
+        environment {
+            config = ApplicationConfig("application-test-nodata.conf")
+        }
         val response = client.post("/greetings") {
             contentType(ContentType.Application.Json)
             setBody("""{"type": "casual","greeting": "Hey there!"}""")
