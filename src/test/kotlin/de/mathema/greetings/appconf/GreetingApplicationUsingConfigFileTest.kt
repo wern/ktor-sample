@@ -1,36 +1,41 @@
-package de.mathema.greetings
+package de.mathema.greetings.appconf
 
-import de.mathema.greetings.models.Greeting
-import de.mathema.greetings.models.greetingStore
+import de.mathema.greetings.Greeting
+import de.mathema.greetings.greetingStore
 import io.ktor.http.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.server.application.*
+import io.ktor.server.config.*
 import kotlin.test.*
 import io.ktor.server.testing.*
-import de.mathema.greetings.plugins.*
 
-// Succeeds only with disabled application.conf.disabled!
-class ApplicationTest {
+fun Application.testData() {
+    greetingStore["casual"] = Greeting("casual","Hey there!")
+    greetingStore["formal"] = Greeting("formal","Good morning!")
+}
+
+fun Application.noData() {
+    greetingStore.clear()
+}
+
+class ApplicationUsingConfigFileTest {
     @Test
-    fun testStartWithEmptyGreetingStorage() = testApplication {
-        application {
-            configureRouting()
+    fun testGetWithEmptyGreetingStorage() = testApplication {
+        environment {
+            config = ApplicationConfig("application-test-nodata.conf")
         }
         client.get("/greetings").apply {
-            assertEquals(HttpStatusCode.NotFound, status)
-            assertEquals("No greetings found", bodyAsText())
+            assertEquals(HttpStatusCode.OK, status)
+            assertEquals("[]", bodyAsText())
         }
     }
 
     @Test
-    fun testReturnAllGreetingsStored() = testApplication {
-        application {
-            configureRouting()
-            configureSerialization()
-            storeGreeting(greetingStore, Greeting("casual","Hey there!"))
-            storeGreeting(greetingStore,  Greeting("formal","Good morning!"))
+    fun testGetReturnsAllGreetingsStored() = testApplication {
+        environment {
+            config = ApplicationConfig("application-test.conf")
         }
-
         client.get("/greetings").apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("""[{"type":"casual","greeting":"Hey there!"},{"type":"formal","greeting":"Good morning!"}]""", bodyAsText())
@@ -41,11 +46,9 @@ class ApplicationTest {
 
     @Test
     fun testCreateAGreeting() = testApplication {
-        application {
-            configureRouting()
-            configureSerialization()
+        environment {
+            config = ApplicationConfig("application-test-nodata.conf")
         }
-
         val response = client.post("/greetings") {
             contentType(ContentType.Application.Json)
             setBody("""{"type": "casual","greeting": "Hey there!"}""")

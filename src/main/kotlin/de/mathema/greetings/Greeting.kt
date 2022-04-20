@@ -1,4 +1,4 @@
-package de.mathema.greetings.models
+package de.mathema.greetings
 
 import kotlinx.serialization.Serializable
 
