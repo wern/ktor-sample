@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 fun Route.greetingRouting(){
     route("/greetings") {
         get {
-            call.respond(greetingStore.map { (type , greet) -> greet })
+            call.respond(greetingStore.map { e -> e.value })
         }
 
         get("{type?}") {
