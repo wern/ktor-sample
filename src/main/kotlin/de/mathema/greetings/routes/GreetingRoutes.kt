@@ -26,7 +26,7 @@ fun Route.greetingRouting(){
         post {
             val greeting = call.receive<Greeting>()
             greetingStore[greeting.type] = greeting
-            call.respondText("Customer created", status = HttpStatusCode.Created)
+            call.respondText("Greeting created", status = HttpStatusCode.Created)
         }
         delete("{type?}") {
             val type = call.parameters["type"] ?: return@delete call.respondText(
