@@ -21,9 +21,13 @@ fun Route.greetingRouting(){
         }
 
         post {
-            val greeting = call.receive<Greeting>()
-            greetingStore[greeting.type] = greeting
-            call.respond(HttpStatusCode.Created)
+            try {
+                val greeting = call.receive<Greeting>()
+                greetingStore[greeting.type] = greeting
+                call.respond(HttpStatusCode.Created)
+            }catch (ex : Exception){
+                call.respond(HttpStatusCode.BadRequest,"Not a valid greeting!")
+            }
         }
 
         delete("{type?}") {
