@@ -12,11 +12,8 @@ fun Route.greetingRouting(){
             call.respond(greetingStore.map { e -> e.value })
         }
 
-        get("{type?}") {
-            val type = call.parameters["type"] ?: return@get call.respondText(
-                "Missing type",
-                status = HttpStatusCode.BadRequest
-            )
+        get("{type}") {
+            val type = call.parameters["type"]
             call.respond(greetingStore[type] ?: HttpStatusCode.NotFound)
         }
 
@@ -30,11 +27,8 @@ fun Route.greetingRouting(){
             }
         }
 
-        delete("{type?}") {
-            val type = call.parameters["type"] ?: return@delete call.respondText(
-                "Missing type",
-                status = HttpStatusCode.BadRequest
-            )
+        delete("{type}") {
+            val type = call.parameters["type"]
             greetingStore.remove(type) ?: return@delete call.respond(HttpStatusCode.NotFound)
             call.respond(HttpStatusCode.OK)
         }
