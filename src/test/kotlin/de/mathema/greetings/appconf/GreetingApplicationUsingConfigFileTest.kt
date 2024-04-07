@@ -1,6 +1,7 @@
 package de.mathema.greetings.appconf
 
 import de.mathema.greetings.Greeting
+import de.mathema.greetings.auth.config.authSecret
 import de.mathema.greetings.greetingStore
 import io.ktor.http.*
 import io.ktor.client.request.*
@@ -25,7 +26,11 @@ class ApplicationUsingConfigFileTest {
         environment {
             config = ApplicationConfig("application-test-nodata.conf")
         }
-        client.get("/greetings").apply {
+        client.get("/greetings"){
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
+        }.apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("[]", bodyAsText())
         }
@@ -36,7 +41,11 @@ class ApplicationUsingConfigFileTest {
         environment {
             config = ApplicationConfig("application-test.conf")
         }
-        client.get("/greetings").apply {
+        client.get("/greetings"){
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
+        }.apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("""[{"type":"casual","greeting":"Hey there!"},{"type":"formal","greeting":"Good morning!"}]""", bodyAsText())
         }
@@ -52,6 +61,9 @@ class ApplicationUsingConfigFileTest {
         val response = client.post("/greetings") {
             contentType(ContentType.Application.Json)
             setBody("""{"type": "casual","greeting": "Hey there!"}""")
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
         }
         assertEquals(HttpStatusCode.Created, response.status)
     }

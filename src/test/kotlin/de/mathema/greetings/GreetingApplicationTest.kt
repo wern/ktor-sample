@@ -1,5 +1,6 @@
 package de.mathema.greetings
 
+import de.mathema.greetings.auth.config.authSecret
 import io.ktor.http.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -12,10 +13,16 @@ class GreetingApplicationTest {
     @Test
     fun testGetWithEmptyGreetingStorage() = testApplication {
         application {
+            configureBearerTokenAuthentication()
             configureRouting()
             configureSerialization()
+            greetingStore.clear()
         }
-        client.get("/greetings").apply {
+        client.get("/greetings"){
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
+        }.apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("[]", bodyAsText())
         }
@@ -24,13 +31,19 @@ class GreetingApplicationTest {
     @Test
     fun testGetReturnsAllGreetingsStored() = testApplication {
         application {
+            configureBearerTokenAuthentication()
             configureRouting()
             configureSerialization()
+            greetingStore.clear()
             storeGreeting(greetingStore, Greeting("casual","Hey there!"))
             storeGreeting(greetingStore,  Greeting("formal","Good morning!"))
         }
 
-        client.get("/greetings").apply {
+        client.get("/greetings"){
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
+        }.apply {
             assertEquals(HttpStatusCode.OK, status)
             assertEquals("""[{"type":"casual","greeting":"Hey there!"},{"type":"formal","greeting":"Good morning!"}]""", bodyAsText())
         }
@@ -41,6 +54,7 @@ class GreetingApplicationTest {
     @Test
     fun testCreateAGreeting() = testApplication {
         application {
+            configureBearerTokenAuthentication()
             configureRouting()
             configureSerialization()
         }
@@ -48,6 +62,9 @@ class GreetingApplicationTest {
         val response = client.post("/greetings") {
             contentType(ContentType.Application.Json)
             setBody("""{"type": "casual","greeting": "Hey there!"}""")
+            headers {
+                header("Authorization", "Bearer $authSecret")
+            }
         }
         assertEquals(HttpStatusCode.Created, response.status)
     }

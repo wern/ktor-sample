@@ -8,25 +8,16 @@
     <name>de.mathema.ktor-sample</name>
     <description>de.mathema.ktor-sample</description>
     <properties>
-        <ktor_version>2.0.0</ktor_version>
+        <ktor_version>2.3.9</ktor_version>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlin_version>1.6.20</kotlin_version>
-        <logback_version>1.2.3</logback_version>
+        <kotlin_version>1.9.23</kotlin_version>
+        <logback_version>1.4.14</logback_version>
+        <slf4j_version>2.0.9</slf4j_version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <main.class>de.mathema.ApplicationKt</main.class>
+        <main.class>com.example.ApplicationKt</main.class>
     </properties>
     <repositories>
-        <repository>
-            <id>ktor_eap</id>
-            <url>https://maven.pkg.jetbrains.space/public/p/ktor/eap</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -46,18 +37,28 @@
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-netty-jvm</artifactId>
+            <artifactId>ktor-server-auth-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-tomcat-jvm</artifactId>
+            <artifactId>ktor-server-auth-jwt-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-netty-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j_version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
@@ -69,6 +70,12 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-debug</artifactId>
+            <version>1.6.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -149,28 +156,28 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.6.20</version>
+                <version>1.9.23</version>
                 <executions>
-                <execution>
-                    <id>compile</id>
-                    <phase>compile</phase>
-                    <goals>
-                        <goal>compile</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <compilerPlugins>
-                    <plugin>kotlinx-serialization</plugin>
-                </compilerPlugins>
-            </configuration>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-maven-serialization</artifactId>
-                    <version>${kotlin_version}</version>
-                </dependency>
-            </dependencies>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerPlugins>
+                        <plugin>kotlinx-serialization</plugin>
+                    </compilerPlugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-serialization</artifactId>
+                        <version>${kotlin_version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
