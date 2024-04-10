@@ -10,9 +10,7 @@ private val json = Json { ignoreUnknownKeys = true }
 val TypeAlwaysLowerCase = createApplicationPlugin(name = "TypeAlwaysLowerCase") {
     println("TypeAlwaysLowerCasePlugin is installed!")
 
-    onCall {
-        println("onCall() received")
-    }
+    onCall { call -> println("onCall() received") }
 
     onCallReceive { call ->
         transformBody { data ->
@@ -27,6 +25,8 @@ val TypeAlwaysLowerCase = createApplicationPlugin(name = "TypeAlwaysLowerCase") 
             } else {
                 data
             }
-        }
+        }.also { println("onCallReceive() received")  }
     }
+
+    onCallRespond() { call -> println("onCallRespond() received") }
 }
