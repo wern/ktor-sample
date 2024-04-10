@@ -44,13 +44,13 @@ fun Application.configureJWTAuthentication(){
     install(Authentication) {
         jwt ("auth-jwt"){
             realm = authRealm
-            verifier(
+            verifier {
                 JWT
                     .require(Algorithm.HMAC256(authSecret))
                     .withAudience(authAudience)
                     .withIssuer(authIssuer)
                     .build()
-            )
+            }
             validate { credential ->
                 if (credential.payload.getClaim("username").asString() == authUser) {
                     JWTPrincipal(credential.payload)
